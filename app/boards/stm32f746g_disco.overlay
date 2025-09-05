@@ -1,0 +1,157 @@
+/**
+ * @file      stm32f746g_disco.overlay
+ * @brief     stm32f746g_disco board project overlay
+ *
+ * Copyright (C) Witekio
+ *
+ * This file is part of Zephyr Wind Turbine demonstration.
+ *
+ * This demonstration is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This demonstration is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/delete-node/ &slot1_partition;
+/delete-node/ &storage_partition;
+
+/ {
+    chosen {
+        zephyr,code-partition = &slot0_partition;
+    };
+
+    zephyr,user {
+        io-channels = <&adc1 0>;
+    };
+
+    aliases {
+        wind-turbine-led = &wind_turbine_led;
+        wind-turbine-top-button = &wind_turbine_button1;
+        wind-turbine-bottom-button = &wind_turbine_button2;
+        wind-turbine-motor-timer = &timers3;
+    };
+
+    leds {
+		wind_turbine_led: led {
+			label = "Wind Turbine LED 1";
+			gpios = <&arduino_header 11 GPIO_ACTIVE_LOW>; /* Arduino D5 */
+		};
+	};
+
+    gpio_keys {
+        wind_turbine_button1: button1 {
+            label = "Wind Turbine Button 1";
+            gpios = <&arduino_header 20 GPIO_ACTIVE_LOW>; /* Arduino D14 */
+            zephyr,code = <INPUT_KEY_UP>;
+        };
+        wind_turbine_button2: button2 {
+            label = "Wind Turbine Button 2";
+            gpios = <&arduino_header 21 GPIO_ACTIVE_LOW>; /* Arduino D15 */
+            zephyr,code = <INPUT_KEY_DOWN>;
+        };
+    };
+};
+
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+        /* Bootloader slot: 64KB */
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 DT_SIZE_K(64)>;
+            read-only;
+        };
+        /* Application slot: 960KB */
+        slot0_partition: partition@10000 {
+            label = "image-0";
+            reg = <0x00010000 DT_SIZE_K(960)>;
+        };
+    };
+};
+
+&n25q128a1 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+        /* Update slot: 960KB */
+        slot1_partition: partition@0 {
+            label = "image-1";
+            reg = <0x00000000 DT_SIZE_K(960)>;
+        };
+        /* Swap slot: 256KB */
+        scratch_partition: partition@F0000 {
+            label = "image-scratch";
+            reg = <0x000F0000 DT_SIZE_K(256)>;
+        };
+        /* Storage slot: 8MB */
+        storage_partition: partition@800000 {
+            label = "storage";
+            reg = <0x00800000 DT_SIZE_M(8)>;
+        };
+    };
+};
+
+&adc1 {
+    pinctrl-0 = <&adc1_in0_pa0>; /* Arduino A0 */
+    pinctrl-names = "default";
+    st,adc-prescaler = <4>;
+    #address-cells = <1>;
+    #size-cells = <0>;
+    status = "okay";
+
+    channel@0 {
+        reg = <0>;
+        zephyr,gain = "ADC_GAIN_1";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+        zephyr,resolution = <12>;
+    };
+};
+
+&timers3 {
+    status = "okay";
+    pwm {
+        status = "okay";
+        pinctrl-0 = <&tim3_ch1_pb4>; /* Arduino D3 */
+        pinctrl-names = "default";
+    };
+};
+
+&pinctrl {
+    tim3_ch1_pb4: tim3_ch1_pb4 {
+        pinmux = <STM32_PINMUX('B', 4, AF2)>; /* Alternate function 2 */
+        bias-pull-up;
+        drive-push-pull;
+    };
+};
+
+&arduino_serial {
+    status = "okay";
+    current-speed = <115200>;
+    pinctrl-0 = < &usart6_tx_pc6 &usart6_rx_pc7 >;
+    pinctrl-names = "default";
+    esp_at {
+        compatible = "espressif,esp-at";
+        status = "okay";
+        reset-gpios = <&arduino_header 8 GPIO_ACTIVE_LOW>; /* Arduino D2 */
+    };
+};
+
+&rng {
+    status = "okay";
+};
+
+&mac {
+    status = "disabled";
+};

@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Bootloader - STM32F746G-DISCO",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "interface": "swd",
+            "configFiles": [
+                "${workspaceRoot}/openocd.cfg",
+            ],
+            "cwd": "${workspaceRoot}",
+            "runToEntryPoint": "main",
+            "executable": "./../build/mcuboot/zephyr/zephyr.hex",
+            "svdFile": "${workspaceRoot}/STM32F7x6.svd",
+            "preLaunchCommands": [
+                "add-symbol-file ./../build/mcuboot/zephyr/zephyr.elf"
+            ]
+        },
+        {
+            "name": "Application - STM32F746G-DISCO",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "interface": "swd",
+            "configFiles": [
+                "${workspaceRoot}/openocd.cfg",
+            ],
+            "cwd": "${workspaceRoot}",
+            "runToEntryPoint": "main",
+            "executable": "./../build/app/zephyr/zephyr.signed.hex",
+            "svdFile": "${workspaceRoot}/STM32F7x6.svd",
+            "preLaunchCommands": [
+                "add-symbol-file ./../build/app/zephyr/zephyr.elf"
+            ]
+        }
+    ]
+}

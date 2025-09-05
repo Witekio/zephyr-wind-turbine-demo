@@ -1,0 +1,28 @@
+# @file      module.yml
+# @brief     wind-turbine Zephyr module file
+#
+# Copyright (C) Witekio
+#
+# This file is part of Zephyr Wind Turbine demonstration.
+#
+# This demonstration is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This demonstration is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+
+build:
+  # Path to the Kconfig file that will be sourced into Zephyr Kconfig tree under
+  # Zephyr > Modules > Example application. Path is relative from root of this
+  # repository.
+  kconfig: Kconfig
+  # Path to the folder that contains the CMakeLists.txt file to be included by
+  # Zephyr build system. The `.` is the root of this repository.
+  cmake: .

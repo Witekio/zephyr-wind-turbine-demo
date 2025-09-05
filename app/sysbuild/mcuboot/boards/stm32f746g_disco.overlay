@@ -1,0 +1,72 @@
+/**
+ * @file      stm32f746g_disco.overlay
+ * @brief     stm32f746g-disco board mcuboot overlay
+ *
+ * Copyright (C) Witekio
+ *
+ * This file is part of Zephyr Wind Turbine demonstration.
+ *
+ * This demonstration is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This demonstration is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/delete-node/ &slot1_partition;
+/delete-node/ &storage_partition;
+
+/ {
+    chosen {
+        zephyr,code-partition = &boot_partition;
+    };
+};
+
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+        /* Bootloader slot: 64KB */
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 DT_SIZE_K(64)>;
+            read-only;
+        };
+        /* Application slot: 960KB */
+        slot0_partition: partition@10000 {
+            label = "image-0";
+            reg = <0x00010000 DT_SIZE_K(960)>;
+        };
+    };
+};
+
+&n25q128a1 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+        /* Update slot: 960KB */
+        slot1_partition: partition@0 {
+            label = "image-1";
+            reg = <0x00000000 DT_SIZE_K(960)>;
+        };
+        /* Swap slot: 256KB */
+        scratch_partition: partition@F0000 {
+            label = "image-scratch";
+            reg = <0x000F0000 DT_SIZE_K(256)>;
+        };
+        /* LittleFS slot: 8MB */
+        littlefs_partition: partition@800000 {
+            label = "littlefs";
+            reg = <0x00800000 DT_SIZE_M(8)>;
+        };
+    };
+};

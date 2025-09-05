@@ -1,0 +1,56 @@
+# @file      Kconfig
+# @brief     wind-turbine project Kconfig file
+#
+# Copyright (C) Witekio
+#
+# This file is part of Zephyr Wind Turbine demonstration.
+#
+# This demonstration is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This demonstration is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+
+menu "Zephyr"
+
+    source "Kconfig.zephyr"
+
+endmenu
+
+menu "Application"
+
+    config EXAMPLE_WIFI_SSID
+        string "Wi-Fi network SSID"
+        depends on WIFI
+        help
+            Defines the Wi-Fi network SSID.
+
+    config EXAMPLE_WIFI_PSK
+        string "Wi-Fi network Pre-Shared Key (PSK)"
+        depends on WIFI && !EXAMPLE_WIFI_AUTHENTICATION_MODE_NONE
+        help
+            Defines the Wi-Fi network Pre-Shared Key (PSK).
+
+    choice EXAMPLE_WIFI_AUTHENTICATION_MODE
+        prompt "Wi-Fi network authentication mode"
+        default EXAMPLE_WIFI_AUTHENTICATION_MODE_WPA2_PSK
+        depends on WIFI
+        help
+            Defines the Wi-Fi network authentication mode.
+
+        config EXAMPLE_WIFI_AUTHENTICATION_MODE_WPA2_PSK
+            bool "WPA2-PSK"
+        config EXAMPLE_WIFI_AUTHENTICATION_MODE_WPA3_SAE
+            bool "WPA3-SAE"
+        config EXAMPLE_WIFI_AUTHENTICATION_MODE_NONE
+            bool "None"
+    endchoice
+
+endmenu

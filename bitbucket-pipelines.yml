@@ -1,0 +1,45 @@
+# @file      bitbucket-pipelines.yml
+# @brief     Used to perform code format checking on BitBucket repository
+#
+# Copyright (C) Witekio
+#
+# This file is part of Zephyr Wind Turbine demonstration.
+#
+# This demonstration is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This demonstration is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+
+image: ubuntu:24-04
+
+clone:
+  depth: full
+
+definitions:
+  steps:
+    - step: &check-code-format
+        name: "Check code format"
+        script:
+          - sudo apt-get install clang-format pcregrep
+          - ./.github/workflows/check_headers.sh
+          - ./.github/workflows/check_include_guards.sh
+          - ./.github/workflows/check_equivalence_tests.sh
+          - ./.github/workflows/check_code_format.sh
+
+pipelines:
+  branches:
+    '**':
+      - step: *check-code-format
+
+  pull-requests:
+    '**':
+      - step: *check-code-format
+

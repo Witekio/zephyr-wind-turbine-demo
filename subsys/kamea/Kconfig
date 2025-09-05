@@ -1,0 +1,97 @@
+# @file      Kconfig
+# @brief     kamea sub-system Kconfig file
+#
+# Copyright (C) Witekio
+#
+# This file is part of Zephyr Wind Turbine demonstration.
+#
+# This demonstration is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This demonstration is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with This demonstration. If not, see <http://www.gnu.org/licenses/>.
+
+config KAMEA
+	bool "Kamea support"
+	help
+	  Kamea is a software accelerator dedicated to the creation of an IoT
+	  Platform environment.
+
+if KAMEA
+
+	config KAMEA_CHANNEL_MQTT
+		bool "MQTT channel support"
+		select EVENTS
+		select MQTT_LIB
+		select MQTT_LIB_TLS
+		select POSIX_API
+		select TLS_CREDENTIALS
+		help
+		  This option enables MQTT channel.
+
+	if KAMEA_CHANNEL_MQTT
+
+		config KAMEA_CHANNEL_MQTT_URL
+			string "MQTT URL"
+			help
+			  MQTT broker URL.
+
+		config KAMEA_CHANNEL_MQTT_PORT
+			int "MQTT port"
+			default 8883
+			help
+			  MQTT broker port.
+
+		config KAMEA_TLS_CREDENTIAL_DEVICE_KEY_AND_CERTIFICATE_TAG
+			int "Device and key certificate tag"
+			default 1
+			help
+			  TLS credential device key and certificate tag
+
+		config KAMEA_TLS_CREDENTIAL_SERVER_CA_CERTIFICATE_TAG
+			int "Server CA certificate tag"
+			default 2
+			help
+			  TLS credential server CA certificate tag
+			
+		config KAMEA_MQTT_RX_BUFFER_SIZE
+			int "MQTT Rx buffer size"
+			default 256
+			help
+			  MQTT Rx buffer size.
+
+		config KAMEA_MQTT_TX_BUFFER_SIZE
+			int "MQTT Tx buffer size"
+			default 256
+			help
+			  MQTT Tx buffer size.
+
+		config KAMEA_MQTT_RECONNECT_INTERVAL
+			int "MQTT reconnect interval (seconds)"
+			default 10
+			help
+			  MQTT reconnect interval (seconds).
+
+		config KAMEA_USE_CONNECTION_MANAGER
+			bool "Use connection manager to connect and disconnect MQTT client"
+			default y
+			depends on NET_CONNECTION_MANAGER
+			help
+			  If this option is set, then the connection manager is used to
+			  connect and disconnect the MQTT client.
+
+	endif
+
+module = KAMEA
+module-str = Kamea Support
+module-help = Sets log level for Kamea support
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
