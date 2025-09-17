@@ -77,6 +77,15 @@ int kamea_mqtt_connect(void);
 int kamea_mqtt_publish_telemetry(uint8_t *data, uint32_t len, enum mqtt_qos qos);
 
 /**
+ * @brief Publish configs to the server
+ * @param data Configs data
+ * @param len Length of data
+ * @param qos MQTT QOS
+ * @return 0 if the function succeeds, error code otherwise
+ */
+int kamea_mqtt_publish_configs(uint8_t *data, uint32_t len, enum mqtt_qos qos);
+
+/**
  * @brief Close connection with the server
  * @return 0 if the function succeeds, error code otherwise
  */

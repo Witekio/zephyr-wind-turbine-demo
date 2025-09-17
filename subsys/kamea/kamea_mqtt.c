@@ -207,6 +207,48 @@ END:
 }
 
 int
+kamea_mqtt_publish_configs(uint8_t *data, uint32_t len, enum mqtt_qos qos) {
+
+    int                       result;
+    struct mqtt_publish_param param;
+    char                      topic[64];
+
+    /* Check if client is connected */
+    if (false == kamea_mqtt_connected) {
+        LOG_DBG("Unable to publish data, client is not connected");
+        return -1;
+    }
+
+    /* Set publish param */
+    param.message.topic.qos = qos;
+    snprintf(topic, sizeof(topic), "device/%s/configs/reported", kamea_client_id);
+    param.message.topic.topic.utf8 = (uint8_t *)topic;
+    param.message.topic.topic.size = strlen(topic);
+    param.message.payload.data     = data;
+    param.message.payload.len      = len;
+    param.message_id               = sys_rand16_get();
+    param.dup_flag                 = 0U;
+    param.retain_flag              = 0U;
+
+    /* Publish data */
+    /* FIXME: the message should be passed to a queue handled by a separated thread */
+    /* FIXME: actually it blocks the calling function and cause issue if the calling function is an interrupt */
+    if (0 != (result = mqtt_publish(&kamea_mqtt_client, &param))) {
+        LOG_ERR("Unable to publish data, result = %d, errno = %d", result, errno);
+        goto END;
+    }
+
+END:
+
+    /* Invoked published callback */
+    if (NULL != kamea_callbacks.published) {
+        kamea_callbacks.published(param.message_id, result);
+    }
+
+    return result;
+}
+
+int
 kamea_mqtt_disconnect(void) {
 
     /* FIXME: to be completed to handle the case without CONFIG_KAMEA_USE_CONNECTION_MANAGER */

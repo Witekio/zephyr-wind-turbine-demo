@@ -241,11 +241,11 @@ kamea_wind_turbine_status_cb(const struct zbus_channel *chan) {
 #endif /* CONFIG_KAMEA_CHANNEL_MQTT */
 
     /* Format config payload */ /* FIXME: should be dynamic and depends on configuration given by the user, use static values for now */
-    snprintf(payload, sizeof(payload), "{ \"turnedOn\": true, \"isProduction\": true, \"limiter\": 20 }");
+    snprintf(payload, sizeof(payload), "{ \"turnedOn\": true, \"isProduction\": true, \"limiter\": 30 }");
 
     /* Publish payload */
 #ifdef CONFIG_KAMEA_CHANNEL_MQTT
-    kamea_mqtt_publish_telemetry(payload, strlen(payload), MQTT_QOS_1_AT_LEAST_ONCE);
+    kamea_mqtt_publish_configs(payload, strlen(payload), MQTT_QOS_1_AT_LEAST_ONCE);
 #endif /* CONFIG_KAMEA_CHANNEL_MQTT */
 
     /* Format App payload */
